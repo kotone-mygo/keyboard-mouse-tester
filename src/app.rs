@@ -1,7 +1,7 @@
-use eframe::egui;
 use crate::keyboard;
 use crate::mouse;
 use crate::state::AppState;
+use eframe::egui;
 
 pub struct App {
     state: AppState,
@@ -38,14 +38,12 @@ impl eframe::App for App {
                     self.state.process_key(*key, *pressed);
                 }
                 egui::Event::PointerButton {
-                    button,
-                    pressed, ..
+                    button, pressed, ..
                 } => {
                     self.state.process_pointer_button(*button, *pressed);
                 }
                 egui::Event::MouseWheel { delta, .. } => {
-                    self.state
-                        .process_scroll(delta.x as f64, delta.y as f64);
+                    self.state.process_scroll(delta.x as f64, delta.y as f64);
                 }
                 _ => {}
             }

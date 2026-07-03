@@ -1,5 +1,5 @@
-use eframe::egui::{self, Color32, CornerRadius, Rect, Shape, Stroke, Vec2};
 use crate::state::AppState;
+use eframe::egui::{self, Color32, CornerRadius, Rect, Shape, Stroke, Vec2};
 
 pub fn draw_mouse_area(ui: &mut egui::Ui, state: &AppState) {
     ui.vertical(|ui| {

@@ -1,5 +1,5 @@
-use std::collections::{HashMap, VecDeque};
 use eframe::egui::Key;
+use std::collections::{HashMap, VecDeque};
 
 #[derive(Clone)]
 pub struct KeyState {
