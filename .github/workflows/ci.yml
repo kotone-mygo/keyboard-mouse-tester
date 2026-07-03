@@ -33,12 +33,17 @@ jobs:
       - name: Build
         run: cargo build --release
 
+      - name: Rename binary
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: mv target/release/keyboard-mouse-tester${{ runner.os == 'Windows' && '.exe' || '' }} target/release/keyboard-mouse-tester-${{ github.ref_name }}-${{ runner.os }}${{ runner.os == 'Windows' && '.exe' || '' }}
+
       - name: Upload artifact
         if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-artifact@v4
         with:
           name: keyboard-mouse-tester-${{ github.ref_name }}-${{ runner.os }}
-          path: target/release/keyboard-mouse-tester${{ runner.os == 'Windows' && '.exe' || '' }}
+          path: target/release/keyboard-mouse-tester-${{ github.ref_name }}-${{ runner.os }}${{ runner.os == 'Windows' && '.exe' || '' }}
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
@@ -57,3 +62,4 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: artifacts/**/*
+          generate_release_notes: true
