@@ -1,6 +1,5 @@
 use std::collections::{HashMap, VecDeque};
-use rdev::{Button, Key};
-use crate::event::AppEvent;
+use eframe::egui::Key;
 
 #[derive(Clone)]
 pub struct KeyState {
@@ -42,52 +41,44 @@ impl AppState {
         }
     }
 
-    pub fn process_event(&mut self, event: AppEvent) {
-        match event {
-            AppEvent::KeyPressed(key) => {
-                let state = self.keys.entry(key).or_insert(KeyState {
-                    pressed: false,
-                    press_count: 0,
-                });
-                if !state.pressed {
-                    state.pressed = true;
-                    state.press_count += 1;
-                    self.total_presses += 1;
-                }
-                self.log(format!("{:?}", key));
+    pub fn process_key(&mut self, key: Key, pressed: bool) {
+        if pressed {
+            let state = self.keys.entry(key).or_insert(KeyState {
+                pressed: false,
+                press_count: 0,
+            });
+            if !state.pressed {
+                state.pressed = true;
+                state.press_count += 1;
+                self.total_presses += 1;
             }
-            AppEvent::KeyReleased(key) => {
-                if let Some(state) = self.keys.get_mut(&key) {
-                    state.pressed = false;
-                }
-            }
-            AppEvent::MouseMoved(x, y) => {
-                self.mouse.x = x;
-                self.mouse.y = y;
-            }
-            AppEvent::ButtonPressed(button) => {
-                match button {
-                    Button::Left => self.mouse.left = true,
-                    Button::Middle => self.mouse.middle = true,
-                    Button::Right => self.mouse.right = true,
-                    _ => {}
-                }
-                self.log(format!("Mouse {:?}", button));
-            }
-            AppEvent::ButtonReleased(button) => {
-                match button {
-                    Button::Left => self.mouse.left = false,
-                    Button::Middle => self.mouse.middle = false,
-                    Button::Right => self.mouse.right = false,
-                    _ => {}
-                }
-            }
-            AppEvent::WheelScrolled(dx, dy) => {
-                self.mouse.scroll_delta.0 += dx;
-                self.mouse.scroll_delta.1 += dy;
-                self.log(format!("Scroll ({:.0}, {:.0})", dx, dy));
-            }
+            self.log(format!("{:?}", key));
+        } else if let Some(state) = self.keys.get_mut(&key) {
+            state.pressed = false;
         }
+    }
+
+    pub fn process_mouse_move(&mut self, x: f64, y: f64) {
+        self.mouse.x = x;
+        self.mouse.y = y;
+    }
+
+    pub fn process_pointer_button(&mut self, button: eframe::egui::PointerButton, pressed: bool) {
+        match button {
+            eframe::egui::PointerButton::Primary => self.mouse.left = pressed,
+            eframe::egui::PointerButton::Middle => self.mouse.middle = pressed,
+            eframe::egui::PointerButton::Secondary => self.mouse.right = pressed,
+            _ => {}
+        }
+        if pressed {
+            self.log(format!("Mouse {:?}", button));
+        }
+    }
+
+    pub fn process_scroll(&mut self, dx: f64, dy: f64) {
+        self.mouse.scroll_delta.0 += dx;
+        self.mouse.scroll_delta.1 += dy;
+        self.log(format!("Scroll ({:.0}, {:.0})", dx, dy));
     }
 
     fn log(&mut self, msg: String) {
@@ -101,35 +92,35 @@ impl AppState {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rdev::{Key, Button};
+    use eframe::egui::Key;
 
     #[test]
     fn test_key_press_release() {
         let mut state = AppState::new();
-        state.process_event(AppEvent::KeyPressed(Key::KeyA));
-        assert!(state.keys[&Key::KeyA].pressed);
-        assert_eq!(state.keys[&Key::KeyA].press_count, 1);
+        state.process_key(Key::A, true);
+        assert!(state.keys[&Key::A].pressed);
+        assert_eq!(state.keys[&Key::A].press_count, 1);
 
-        state.process_event(AppEvent::KeyPressed(Key::KeyA));
-        assert_eq!(state.keys[&Key::KeyA].press_count, 1);
+        state.process_key(Key::A, true);
+        assert_eq!(state.keys[&Key::A].press_count, 1);
 
-        state.process_event(AppEvent::KeyReleased(Key::KeyA));
-        assert!(!state.keys[&Key::KeyA].pressed);
+        state.process_key(Key::A, false);
+        assert!(!state.keys[&Key::A].pressed);
     }
 
     #[test]
     fn test_mouse_click() {
         let mut state = AppState::new();
-        state.process_event(AppEvent::ButtonPressed(Button::Left));
+        state.process_pointer_button(eframe::egui::PointerButton::Primary, true);
         assert!(state.mouse.left);
-        state.process_event(AppEvent::ButtonReleased(Button::Left));
+        state.process_pointer_button(eframe::egui::PointerButton::Primary, false);
         assert!(!state.mouse.left);
     }
 
     #[test]
     fn test_mouse_move() {
         let mut state = AppState::new();
-        state.process_event(AppEvent::MouseMoved(100.0, 200.0));
+        state.process_mouse_move(100.0, 200.0);
         assert_eq!(state.mouse.x, 100.0);
         assert_eq!(state.mouse.y, 200.0);
     }
@@ -137,9 +128,9 @@ mod tests {
     #[test]
     fn test_scroll_delta() {
         let mut state = AppState::new();
-        state.process_event(AppEvent::WheelScrolled(10.0, 20.0));
+        state.process_scroll(10.0, 20.0);
         assert_eq!(state.mouse.scroll_delta, (10.0, 20.0));
-        state.process_event(AppEvent::WheelScrolled(5.0, -3.0));
+        state.process_scroll(5.0, -3.0);
         assert_eq!(state.mouse.scroll_delta, (15.0, 17.0));
     }
 
@@ -147,8 +138,8 @@ mod tests {
     fn test_log_capped() {
         let mut state = AppState::new();
         for _ in 0..30 {
-            state.process_event(AppEvent::KeyPressed(Key::KeyA));
-            state.process_event(AppEvent::KeyReleased(Key::KeyA));
+            state.process_key(Key::A, true);
+            state.process_key(Key::A, false);
         }
         assert!(state.event_log.len() <= 20);
     }
