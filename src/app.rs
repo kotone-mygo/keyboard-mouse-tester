@@ -85,7 +85,7 @@ impl eframe::App for App {
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.horizontal(|ui| {
+            ui.vertical(|ui| {
                 keyboard::draw_keyboard(ui, &self.state);
                 ui.separator();
                 mouse::draw_mouse_area(ui, &self.state);

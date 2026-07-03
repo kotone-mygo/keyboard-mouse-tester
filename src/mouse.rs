@@ -31,11 +31,9 @@ pub fn draw_mouse_area(ui: &mut egui::Ui, state: &AppState) {
             .map(|s| s.as_str())
             .collect::<Vec<_>>()
             .join("\n");
-        egui::ScrollArea::vertical()
-            .max_height(300.0)
-            .show(ui, |ui| {
-                ui.monospace(log_text);
-            });
+        egui::ScrollArea::vertical().show(ui, |ui| {
+            ui.monospace(log_text);
+        });
     });
 }
 

@@ -749,7 +749,7 @@ fn layout() -> Vec<KeyDef> {
 pub fn draw_keyboard(ui: &mut egui::Ui, state: &AppState) {
     let keys = layout();
     let total_w = 24.0 * (UNIT + GAP);
-    let total_h = 11.0 * (KEY_H + GAP);
+    let total_h = 6.0 * (KEY_H + GAP);
 
     let (response, painter) =
         ui.allocate_painter(Vec2::new(total_w, total_h + GAP), egui::Sense::hover());
