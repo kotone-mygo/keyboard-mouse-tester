@@ -1,3 +1,16 @@
+### Task 3: Input Listener
+
+**Files:**
+- Modify: `src/input.rs`
+
+**Interfaces:**
+- Consumes: `Sender<AppEvent>` from `std::sync::mpsc`
+- Produces: `start_listener(Sender<AppEvent>)` function that spawns rdev thread
+- Calls: `AppEvent::KeyPressed`, `AppEvent::KeyReleased`, `AppEvent::MouseMoved`, `AppEvent::ButtonPressed`, `AppEvent::ButtonReleased`, `AppEvent::WheelScrolled`
+
+- [ ] **Step 1: Write input listener**
+
+```rust
 use std::sync::mpsc::Sender;
 use std::thread;
 use crate::event::AppEvent;
@@ -13,8 +26,8 @@ pub fn start_listener(tx: Sender<AppEvent>) {
                 rdev::EventType::MouseMove { x, y } => {
                     Some(AppEvent::MouseMoved(x, y))
                 }
-                rdev::EventType::Wheel { delta_x, delta_y } => {
-                    Some(AppEvent::WheelScrolled(delta_x as f64, delta_y as f64))
+                rdev::EventType::Scroll { delta_x, delta_y } => {
+                    Some(AppEvent::WheelScrolled(delta_x, delta_y))
                 }
                 _ => None,
             };
@@ -26,3 +39,18 @@ pub fn start_listener(tx: Sender<AppEvent>) {
         }
     });
 }
+```
+
+- [ ] **Step 2: Verify it compiles**
+
+Run: `cargo check`
+Expected: Build succeeds
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add -A && git commit -m "feat: add rdev input listener thread"
+```
+
+---
+
