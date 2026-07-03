@@ -15,6 +15,7 @@ pub struct MouseState {
     pub left: bool,
     pub middle: bool,
     pub right: bool,
+    pub scroll_delta: (f64, f64),
 }
 
 pub struct AppState {
@@ -34,6 +35,7 @@ impl AppState {
                 left: false,
                 middle: false,
                 right: false,
+                scroll_delta: (0.0, 0.0),
             },
             event_log: VecDeque::new(),
             total_presses: 0,
@@ -81,6 +83,8 @@ impl AppState {
                 }
             }
             AppEvent::WheelScrolled(dx, dy) => {
+                self.mouse.scroll_delta.0 += dx;
+                self.mouse.scroll_delta.1 += dy;
                 self.log(format!("Scroll ({:.0}, {:.0})", dx, dy));
             }
         }
@@ -128,6 +132,15 @@ mod tests {
         state.process_event(AppEvent::MouseMoved(100.0, 200.0));
         assert_eq!(state.mouse.x, 100.0);
         assert_eq!(state.mouse.y, 200.0);
+    }
+
+    #[test]
+    fn test_scroll_delta() {
+        let mut state = AppState::new();
+        state.process_event(AppEvent::WheelScrolled(10.0, 20.0));
+        assert_eq!(state.mouse.scroll_delta, (10.0, 20.0));
+        state.process_event(AppEvent::WheelScrolled(5.0, -3.0));
+        assert_eq!(state.mouse.scroll_delta, (15.0, 17.0));
     }
 
     #[test]

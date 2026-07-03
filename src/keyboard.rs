@@ -47,6 +47,9 @@ fn layout() -> Vec<KeyDef> {
         KeyDef { row: 1, col: 11.0, width: 1.0, label: "-", key: Key::Minus },
         KeyDef { row: 1, col: 12.0, width: 1.0, label: "=", key: Key::Equal },
         KeyDef { row: 1, col: 13.0, width: 2.0, label: "Back", key: Key::Backspace },
+        KeyDef { row: 1, col: 15.0, width: 1.0, label: "Ins", key: Key::Insert },
+        KeyDef { row: 1, col: 16.0, width: 1.0, label: "Home", key: Key::Home },
+        KeyDef { row: 1, col: 17.0, width: 1.0, label: "PgUp", key: Key::PageUp },
 
         KeyDef { row: 2, col: 0.0, width: 1.5, label: "Tab", key: Key::Tab },
         KeyDef { row: 2, col: 1.5, width: 1.0, label: "Q", key: Key::KeyQ },
@@ -62,6 +65,9 @@ fn layout() -> Vec<KeyDef> {
         KeyDef { row: 2, col: 11.5, width: 1.0, label: "[", key: Key::LeftBracket },
         KeyDef { row: 2, col: 12.5, width: 1.0, label: "]", key: Key::RightBracket },
         KeyDef { row: 2, col: 13.5, width: 1.5, label: "\\", key: Key::BackSlash },
+        KeyDef { row: 2, col: 15.0, width: 1.0, label: "Del", key: Key::Delete },
+        KeyDef { row: 2, col: 16.0, width: 1.0, label: "End", key: Key::End },
+        KeyDef { row: 2, col: 17.0, width: 1.0, label: "PgDn", key: Key::PageDown },
 
         KeyDef { row: 3, col: 0.0, width: 1.75, label: "Caps", key: Key::CapsLock },
         KeyDef { row: 3, col: 1.75, width: 1.0, label: "A", key: Key::KeyA },
@@ -89,6 +95,7 @@ fn layout() -> Vec<KeyDef> {
         KeyDef { row: 4, col: 10.25, width: 1.0, label: ".", key: Key::Dot },
         KeyDef { row: 4, col: 11.25, width: 1.0, label: "/", key: Key::Slash },
         KeyDef { row: 4, col: 12.25, width: 2.75, label: "Shift", key: Key::ShiftRight },
+        KeyDef { row: 4, col: 15.0, width: 1.0, label: "↑", key: Key::UpArrow },
 
         KeyDef { row: 5, col: 0.0, width: 1.25, label: "Ctrl", key: Key::ControlLeft },
         KeyDef { row: 5, col: 1.25, width: 1.25, label: "Win", key: Key::MetaLeft },
@@ -98,13 +105,38 @@ fn layout() -> Vec<KeyDef> {
         KeyDef { row: 5, col: 11.25, width: 1.25, label: "Win", key: Key::MetaRight },
         KeyDef { row: 5, col: 12.5, width: 1.25, label: "Menu", key: Key::Function },
         KeyDef { row: 5, col: 13.75, width: 1.25, label: "Ctrl", key: Key::ControlRight },
+        KeyDef { row: 5, col: 15.0, width: 1.0, label: "←", key: Key::LeftArrow },
+        KeyDef { row: 5, col: 16.0, width: 1.0, label: "↓", key: Key::DownArrow },
+        KeyDef { row: 5, col: 17.0, width: 1.0, label: "→", key: Key::RightArrow },
+
+        KeyDef { row: 6, col: 19.0, width: 1.0, label: "Num", key: Key::NumLock },
+        KeyDef { row: 6, col: 20.0, width: 1.0, label: "/", key: Key::KpDivide },
+        KeyDef { row: 6, col: 21.0, width: 1.0, label: "*", key: Key::KpMultiply },
+        KeyDef { row: 6, col: 22.0, width: 1.0, label: "-", key: Key::KpMinus },
+
+        KeyDef { row: 7, col: 19.0, width: 1.0, label: "7", key: Key::Kp7 },
+        KeyDef { row: 7, col: 20.0, width: 1.0, label: "8", key: Key::Kp8 },
+        KeyDef { row: 7, col: 21.0, width: 1.0, label: "9", key: Key::Kp9 },
+        KeyDef { row: 7, col: 22.0, width: 1.0, label: "+", key: Key::KpPlus },
+
+        KeyDef { row: 8, col: 19.0, width: 1.0, label: "4", key: Key::Kp4 },
+        KeyDef { row: 8, col: 20.0, width: 1.0, label: "5", key: Key::Kp5 },
+        KeyDef { row: 8, col: 21.0, width: 1.0, label: "6", key: Key::Kp6 },
+
+        KeyDef { row: 9, col: 19.0, width: 1.0, label: "1", key: Key::Kp1 },
+        KeyDef { row: 9, col: 20.0, width: 1.0, label: "2", key: Key::Kp2 },
+        KeyDef { row: 9, col: 21.0, width: 1.0, label: "3", key: Key::Kp3 },
+        KeyDef { row: 9, col: 22.0, width: 1.0, label: "Ent", key: Key::KpReturn },
+
+        KeyDef { row: 10, col: 19.0, width: 2.0, label: "0", key: Key::Kp0 },
+        KeyDef { row: 10, col: 21.0, width: 1.0, label: ".", key: Key::KpDelete },
     ]
 }
 
 pub fn draw_keyboard(ui: &mut egui::Ui, state: &AppState) {
     let keys = layout();
-    let total_w = 15.0 * (UNIT + GAP);
-    let total_h = 6.0 * (KEY_H + GAP);
+    let total_w = 24.0 * (UNIT + GAP);
+    let total_h = 11.0 * (KEY_H + GAP);
 
     let (response, painter) = ui.allocate_painter(
         Vec2::new(total_w, total_h + GAP),
